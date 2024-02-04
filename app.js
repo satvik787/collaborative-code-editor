@@ -25,12 +25,14 @@ app.use(express.static("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\p
 app.use(express.static("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\public\\dist"));
 app.use('/api',apiRoutes);
 
-// app.get("*",(req, res)=>{
-//   res.sendFile(path.join("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\public\\dist", 'index.html'));
-// })
+app.get("*",(req, res)=>{
+  res.sendFile(path.join("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\public\\dist", 'index.html'));
+})
 
 const rooms = new Map();
 const users = new Map();
+
+
 
 io.on("connection",(socket)=>{
     socketHandlers(socket,io,rooms,users);

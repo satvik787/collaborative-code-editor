@@ -16,7 +16,7 @@ router.post("/login",(req,res)=>{
     }else{
         res.json({"err":"provide all fields"});
     }
-})
+});
 router.post("/signup",(req,res)=>{
     if(req.body.hasOwnProperty("userName") && req.body.hasOwnProperty("password") && req.body.hasOwnProperty("email")){
         const username = req.body.userName,password = req.body.password,email = req.body.email;
@@ -30,6 +30,60 @@ router.post("/signup",(req,res)=>{
     }else{
         res.json({"err":"provide all fields"})
     }
-})
+});
+router.get("/room",(req,res)=>{
+    if(req.query.hasOwnProperty("userName")){
+        const userName = req.query.userName;
+        db.getRooms(userName)
+            .then((data)=>{
+                res.json(data);
+            }).catch((err)=>{
+                res.json({"err":"Internal Error","msg":err});
+            }
+        );
+    }else{
+        res.json({"err":"provide all fields"});
+    }
+});
+router.post("/room",(req,res)=> {
+    if (req.body.hasOwnProperty("roomId") && req.body.hasOwnProperty("name") && req.body.hasOwnProperty("userName") && req.body.hasOwnProperty("source")) {
+        const {roomId, status, source, name, userName} = req.body;
+        db.getRoom(roomId).then((data)=>{
+            if(data.err){
+                db.insertRoom(roomId, name, status, source, userName)
+                    .then(data => {
+                        res.json(data);
+                    }).catch((err) => {
+                        res.json({"err": "Internal Error", "msg": err});
+                    }
+                )
+            }else{
+                db.updateRoomSourceCode(roomId,source)
+                    .then((data)=>{
+                        res.json(data);
+                    }).catch((err)=>{
+                        res.json({"err":"Internal Error","msg":err})
+                    }
+                )
+            }
+        })
+    }else{
+        res.json({"err":"provide all fields"});
+    }
+});
+router.delete("/room",(req,res)=>{
+    if(req.body.hasOwnProperty("roomId")){
+        const {roomId} = req.body;
+        db.deleteRoom(roomId)
+            .then((data)=>{
+                res.json(data);
+            }).catch((err)=>{
+                res.json({"err":"Internal Error","msg":err});
+            }
+        )
+    }else{
+        res.json({"err":"provide all fields"});
+    }
+});
 
 module.exports = router;

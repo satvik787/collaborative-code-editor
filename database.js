@@ -1,6 +1,5 @@
 const mongodb = require("mongodb");
 const bcrypt = require("bcrypt");
-const {ObjectId} = require("mongodb");
 const URI = "mongodb://localhost:27017";
 const DATABASE = "collaborative_editor";
 const COLLECTION_USER = "users";
@@ -31,7 +30,6 @@ module.exports = class DBAccess{
             "userName":userName,
             "password":hashedPassword,
             "email":email,
-            "rooms":[]
         });
     }
 
@@ -42,16 +40,14 @@ module.exports = class DBAccess{
          );
     }
 
-    async insertRoom(roomId,status,adminId){
-        await this.db.collection(COLLECTION_USER).findOneAndUpdate([
-            {_id: new mongodb.ObjectId(adminId)},
-            {$push:{rooms:new mongodb.ObjectId(roomId)}}
-        ]);
+    async insertRoom(roomId,name,status,source,userName){
         return this.db.collection(COLLECTION_ROOM).insertOne({
             "_id":roomId,
             "status":status,
-            "adminId":new mongodb.ObjectId(adminId),
-            "source":"",
+            "name":name,
+            "adminName":userName,
+            "source":source,
+            "date":new Date()
         });
     }
 
@@ -68,34 +64,35 @@ module.exports = class DBAccess{
     }
 
     //
-
     async getRoom(roomId){
-        const room = await this.db.collection(COLLECTION_ROOM).findOne({_id:new mongodb.ObjectId(roomId)});
+        const room = await this.db.collection(COLLECTION_ROOM).findOne({_id:roomId});
         if(!room)return {"err":"invalid roomId"};
         return room;
     }
 
-    async updateRoomStatus(roomId,status){
-        return this.db.collection(COLLECTION_ROOM).findOneAndUpdate(
-            {_id:new mongodb.ObjectId(roomId)},
-            {$set:{status:status}}
-        );
+    async getRooms(userName) {
+        const cursor = this.db.collection(COLLECTION_ROOM).aggregate([
+            {$match: {adminName: userName}},
+            {$sort: {date: -1}}
+        ]);
+        const rooms = [];
+        while(await cursor.hasNext()){
+            rooms.push(await cursor.next());
+        }
+        return rooms;
     }
+
 
     async updateRoomSourceCode(roomId,code){
         return this.db.collection(COLLECTION_ROOM).findOneAndUpdate(
-            {_id:new mongodb.ObjectId(roomId)},
+            {_id:roomId},
             {$set:{source:code}}
         );
     }
 
-    async deleteRoom(roomId,userId){
-        await this.db.collection(COLLECTION_USER).findOneAndUpdate(
-            {_id:new mongodb.ObjectId(userId)},
-            {$pull:{"rooms":new mongodb.ObjectId(roomId)}}
-        );
+    async deleteRoom(roomId){
         return this.db.collection(COLLECTION_ROOM).deleteOne(
-            {_id:new mongodb.ObjectId(roomId)}
+            {_id:roomId}
         )
     }
 
