@@ -1,6 +1,6 @@
 const mongodb = require("mongodb");
 const bcrypt = require("bcrypt");
-const URI = "mongodb://localhost:27017";
+const URI = process.env.MONGO_URL;
 const DATABASE = "collaborative_editor";
 const COLLECTION_USER = "users";
 const COLLECTION_ROOM = "room";
@@ -86,7 +86,9 @@ module.exports = class DBAccess{
     async updateRoomSourceCode(roomId,code){
         return this.db.collection(COLLECTION_ROOM).findOneAndUpdate(
             {_id:roomId},
-            {$set:{source:code}}
+            {
+                $set:{source:code,date:new Date()},
+            }
         );
     }
 

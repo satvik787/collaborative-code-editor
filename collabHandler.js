@@ -62,6 +62,7 @@ module.exports = (socket,io,rooms,users)=> {
             socket.emit("err",{"msg":"Room ID not provided"});
             return;
         }
+        console.log("USERS",{users:rooms.get(roomId).users})
         socket.emit("usersRes",{users:rooms.get(roomId).users});
     }
 
@@ -156,6 +157,7 @@ module.exports = (socket,io,rooms,users)=> {
                         rooms.set(roomId, {adminSocket:socket,roomName:room.name,sourceCode:room.source,adminName:userName,users:[userObj]});
                         users.set(userName,userObj);
                         cb();
+                        console.log("REOPEN",rooms.get(roomId).users);
                     }else socket.emit("err",{"msg":`Err ${room.err}`})
                 })
                 .catch((err)=>{

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -21,12 +22,12 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\public"));
-app.use(express.static("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\public\\dist"));
+app.use(express.static("./public"));
+// app.use(express.static("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\public\\dist"));
 app.use('/api',apiRoutes);
 
-app.get("*",(req, res)=>{
-  res.sendFile(path.join("D:\\SourceCode\\JS\\collaborative-code-editor-backend\\public\\dist", 'index.html'));
+app.get("/",(req, res)=>{
+    res.json({"MSG":"RUNNING"});
 })
 
 const rooms = new Map();
@@ -37,5 +38,5 @@ const users = new Map();
 io.on("connection",(socket)=>{
     socketHandlers(socket,io,rooms,users);
 });
-httpServer.listen(3155,"0.0.0.0");
+httpServer.listen(process.env.PORT || 3155,"0.0.0.0");
 
