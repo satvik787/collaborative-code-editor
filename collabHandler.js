@@ -33,9 +33,11 @@ module.exports = (socket,io,rooms,users)=> {
             } else if (type === "req") {
                 if (rooms.has(roomId)) {
                     const {adminSocket,adminName} = rooms.get(roomId);
-                    adminSocket.emit(
+                    io.emit(
                         "joinReq",
                         {
+                            "roomId":roomId,
+                            "admin":adminName,
                             "userName": userName,
                             "email": email,
                         }
@@ -62,7 +64,6 @@ module.exports = (socket,io,rooms,users)=> {
             socket.emit("err",{"msg":"Room ID not provided"});
             return;
         }
-        console.log("USERS",{users:rooms.get(roomId).users})
         socket.emit("usersRes",{users:rooms.get(roomId).users});
     }
 
