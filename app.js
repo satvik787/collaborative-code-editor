@@ -9,25 +9,25 @@ const socket = require("socket.io");
 const {response} = require("express");
 const cors = require("cors");
 const socketHandlers = require("./helper/collabHandler");
-const index = express();
-const httpServer = createServer(index);
+const app = express();
+const httpServer = createServer(app);
 const io = new socket.Server(httpServer,{
     cors:{
         origin:"*"
     }
 });
 
-index.use(cors());
-index.use(logger('dev'));
-index.use(express.json());
-index.use(express.urlencoded({ extended: false }));
-index.use(cookieParser());
-index.use(express.static("./public"));
-index.use(express.static(path.resolve(__dirname,"public","dist")));
-index.use('/api',apiRoutes);
+app.use(cors());
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static("./public"));
+app.use(express.static(path.resolve(__dirname,"public","dist")));
+app.use('/api',apiRoutes);
 
 
-index.get("*",(req, res)=>{
+app.get("*",(req, res)=>{
     res.sendFile(path.resolve(__dirname,"public","dist","index.html"));
 })
 
