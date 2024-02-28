@@ -1,11 +1,11 @@
 {
   "name": "collaborative-code-editor-backend",
   "version": "0.0.0",
-  "main": "app.js",
+  "main": "index.js",
   "private": true,
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
