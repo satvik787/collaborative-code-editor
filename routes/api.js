@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const DBAccess = require("../database");
+const DBAccess = require("../helper/database");
 const db = new DBAccess();
 db.run();
 router.post("/login",(req,res)=>{
